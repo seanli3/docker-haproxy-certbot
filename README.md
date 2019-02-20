@@ -1,4 +1,12 @@
 # HAProxy with Certbot
+Based on [nmarus/docker-haproxy-certbot](https://github.com/nmarus/docker-haproxy-certbot)
+and https://bitbucket.org/blanksy-docker/haproxy
+For detailed info see origin repos.
+
+# Changes
+* Moved to Alpine Linux
+* Updated HAProxy to 1.9.4
+* Added check script ```(docker exec -it container_name haproxy-check -) < path_to_your_config```
 
 Docker Container with haproxy and certbot. Haproxy is setup to use a 0 downtime
 reload method that queses requests when the Haproxy service is bounced as new
@@ -46,7 +54,7 @@ docker run -d \
   -v /docker/haproxy/config:/config \
   -v /docker/haproxy/letsencrypt:/etc/letsencrypt \
   -v /docker/haproxy/certs.d:/usr/local/etc/haproxy/certs.d \
-  nmarus/haproxy-certbot
+  halsbox/haproxy-certbot
 ```
 
 It is important to note the mapping of the 3 volumes in the above command. This
@@ -163,22 +171,28 @@ global
   ssl-default-bind-ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS
   ssl-default-bind-options no-sslv3
 
+
 defaults
-  option forwardfor
-
   log global
+  mode http
 
-  timeout connect 5000ms
-  timeout client 50000ms
-  timeout server 50000ms
+  option httplog
+  option dontlognull
 
-  stats enable
-  stats uri /stats
-  stats realm Haproxy\ Statistics
-  stats auth admin:haproxy
+  timeout connect 5000
+  timeout client 10000
+  timeout server 10000
+
+  default-server init-addr none
+
+
+#enable resolving throught docker dns and avoid crashing if service is down while proxy is starting
+resolvers docker_resolver
+  nameserver dns 127.0.0.11:53
+
 
 frontend http-in
-  bind *:80
+  bind 0.0.0.0:80
   mode http
 
   reqadd X-Forwarded-Proto:\ http
@@ -187,26 +201,25 @@ frontend http-in
   redirect scheme https if !letsencrypt_http_acl
   use_backend letsencrypt_http if letsencrypt_http_acl
 
-  default_backend my_http_backend
+  default_backend my-default-backend
 
-frontend https_in
+frontend https-in
   bind *:443 ssl crt /usr/local/etc/haproxy/default.pem crt /usr/local/etc/haproxy/certs.d ciphers ECDHE-RSA-AES256-SHA:RC4-SHA:RC4:HIGH:!MD5:!aNULL:!EDH:!AESGCM
   mode http
 
   reqadd X-Forwarded-Proto:\ https
 
-  default_backend my_http_backend
+  use_backend my-default-backend
+
 
 backend letsencrypt_http
   mode http
   server letsencrypt_http_srv 127.0.0.1:8080
 
-backend my_http_backend
+
+backend my-default-backend
   mode http
-  balance leastconn
-  option tcp-check
-  option log-health-checks
-  server server1 1.1.1.1:80 check port 80
-  server server2 2.2.2.2:80 check port 80
-  server server3 3.3.3.3:80 check port 80
+  balance roundrobin
+  server application_node_1 docker_container_name_1:80 check inter 5s resolvers docker_resolver resolve-prefer ipv4
+  server application_node_2 docker_container_name_2:80 check inter 5s resolvers docker_resolver resolve-prefer ipv4
 ```
