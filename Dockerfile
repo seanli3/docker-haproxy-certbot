@@ -62,7 +62,8 @@ COPY haproxy-check.sh /usr/bin/haproxy-check
 COPY certbot-certonly.sh /usr/bin/certbot-certonly
 COPY certbot-renew.sh /usr/bin/certbot-renew
 COPY start.sh /start.sh
-RUN chmod +x /usr/bin/haproxy-refresh /usr/bin/haproxy-restart /usr/bin/haproxy-check /usr/bin/certbot-certonly /usr/bin/certbot-renew /start.sh
+RUN chmod +x /usr/bin/haproxy-refresh /usr/bin/haproxy-restart /usr/bin/haproxy-check /usr/bin/certbot-certonly /usr/bin/certbot-renew /start.sh \
+    && rm -rf /etc/letsencrypt/live/README
 
 EXPOSE 80 443
 VOLUME ["/config/", "/etc/letsencrypt/", "/usr/local/etc/haproxy/certs.d/"]
