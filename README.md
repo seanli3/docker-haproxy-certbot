@@ -5,7 +5,7 @@ For detailed info see origin repos.
 
 # Changes
 * Moved to Alpine Linux
-* Updated HAProxy to 1.9.4
+* Updated HAProxy to 2.0.3
 * Added check script ```(docker exec -it container_name haproxy-check -) < path_to_your_config```
 
 Docker Container with haproxy and certbot. Haproxy is setup to use a 0 downtime
@@ -156,7 +156,7 @@ load balance against. If there is only a single server, or a different quantity
 this can be adjusted in the backend configuration block. This specific example
 would be a configuration that could be used in front of a PaaS cluster such
 as Flynn.io or Tsuru.io (both of which have their own http router in order to
-direct the traffic to the required application).  
+direct the traffic to the required application).
 
 ```
 global
