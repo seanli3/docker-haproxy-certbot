@@ -57,6 +57,7 @@ RUN set -x && apk add --no-cache --virtual .build-deps \
     iproute2 \
     certbot \
     openssl \
+    lua5.3-socket \
   && rm -rf /var/cache/apk/* \
   && mkdir -p /var/log/supervisor \
   && mkdir -p /usr/local/etc/haproxy/certs.d \
