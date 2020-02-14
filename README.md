@@ -1,15 +1,10 @@
 # HAProxy with Certbot, on Docker
 
-Docker container with HAProxy and Certbot. HAProxy is setup to use a 0 downtime reload method that queses requests when the HAProxy service is bounced as new certificates are added or existing certificates refreshed.
+Docker container running Alpine Linux with HAProxy and Certbot. HAProxy is setup to use a 0 downtime reload method that queses requests when the HAProxy service is bounced as new certificates are added or existing certificates refreshed.  
+See soft versions in the Dockerfile.
 
 Based on [halsbox/docker-haproxy-certbot](https://github.com/halsbox/docker-haproxy-certbot), itself based on https://bitbucket.org/blanksy-docker/haproxy, itself based on [nmarus/docker-haproxy-certbot](https://github.com/nmarus/docker-haproxy-certbot).  
 Possibly more info on origin repos.
-
-## Changes from [nmarus/docker-haproxy-certbot](https://github.com/nmarus/docker-haproxy-certbot) (from Feb 2020)
-
-* Moved to Alpine Linux
-* Updated HAProxy to 2.0.3
-* Added check script
 
 ## Usage
 
