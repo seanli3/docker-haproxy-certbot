@@ -1,4 +1,4 @@
-# haproxy 2.0.3 with certbot
+# HAProxy 2.0.3 with Certbot
 FROM alpine:3.10
 
 ENV HAPROXY_MAJOR 2.0
@@ -7,6 +7,7 @@ ENV HAPROXY_SHA256 aac1ff3e5079997985b6560f46bf265447d0cd841f11c4d77f15942c9fe4b
 
 RUN set -x && apk add --no-cache --virtual .build-deps \
     ca-certificates \
+    curl \
     gcc \
     libc-dev \
     linux-headers \
@@ -61,7 +62,8 @@ RUN set -x && apk add --no-cache --virtual .build-deps \
   && rm -rf /var/cache/apk/* \
   && mkdir -p /var/log/supervisor \
   && mkdir -p /usr/local/etc/haproxy/certs.d \
-  && mkdir -p /usr/local/etc/letsencrypt
+  && mkdir -p /usr/local/etc/letsencrypt \
+  && curl https://ssl-config.mozilla.org/ffdhe2048.txt > /etc/ssl/dhparam.pem
 
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY certbot.cron /etc/cron.d/certbot
@@ -73,7 +75,7 @@ COPY certbot-certonly.sh /usr/bin/certbot-certonly
 COPY certbot-renew.sh /usr/bin/certbot-renew
 COPY start.sh /start.sh
 RUN chmod +x /usr/bin/haproxy-refresh /usr/bin/haproxy-restart /usr/bin/haproxy-check /usr/bin/certbot-certonly /usr/bin/certbot-renew /start.sh \
-    && rm -rf /etc/letsencrypt/live/README
+   && rm -rf /etc/letsencrypt/live/README
 
 EXPOSE 80 443
 VOLUME ["/config/", "/etc/letsencrypt/", "/usr/local/etc/haproxy/certs.d/"]
