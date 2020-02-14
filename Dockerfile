@@ -7,7 +7,6 @@ ENV HAPROXY_SHA256 aac1ff3e5079997985b6560f46bf265447d0cd841f11c4d77f15942c9fe4b
 
 RUN set -x && apk add --no-cache --virtual .build-deps \
     ca-certificates \
-    curl \
     gcc \
     libc-dev \
     linux-headers \
@@ -57,6 +56,7 @@ RUN set -x && apk add --no-cache --virtual .build-deps \
     net-tools \
     iproute2 \
     certbot \
+    curl \
     openssl \
     lua5.3-socket \
   && rm -rf /var/cache/apk/* \
