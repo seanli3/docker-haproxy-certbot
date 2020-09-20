@@ -17,16 +17,18 @@ Certbot contains it's own http/https server and handles the authorization proces
 This configuration of HAProxy is also setup to do all the SSL termination so that your backend server(s) do not require a SSL configuration or certificates to be installed.
 
 In order to use this in your environment, you must point all your SSL enabled domains to the IP Address of this container. This means updating the A records for these domains with your DNS provider. This includes the website name and all alternate names (i.e. example.com and www.example.com).  
-After this is setup, an inbound request for your website(s) is initially received by HAProxy. If the request is part of the Let's Encrypt authentication process, it will redirect that traffic to the local instance of Certbot which is running on internal container ports 8080 and 8443. Otherwise it will pass through the request to a backend server (or servers) as defined in the haproxy.cfg file. The details of HAProxy setup are out of the scope for this README, but some examples are included below to get you started.
+After this is setup, an inbound request for your website(s) is initially received by HAProxy. If the request is part of the Let's Encrypt authentication process, it will redirect that traffic to the local instance of Certbot which is running on internal container ports 8443. Otherwise it will pass through the request to a backend server (or servers) as defined in the haproxy.cfg file. The details of HAProxy setup are out of the scope for this README, but some examples are included below to get you started.
 
 ### Setup and Create Container
 
-This will create the *haproxy-certbot* image.
+This will create the _haproxy-certbot_ image.
+
 ```bash
 docker build --no-cache -t haproxy-certbot https://github.com/lonequantum/docker-haproxy-certbot.git
 ```
 
-This will create the *haproxy-certbot* container. Note that only the inbound ports for 80 and 443 are exposed.
+This will create the _haproxy-certbot_ container. Note that only the inbound ports for 80 and 443 are exposed.
+
 ```bash
 docker run -d \
   --restart=always \
@@ -44,9 +46,9 @@ It is important to note the mapping of the 3 volumes in the above command. This 
 
 The description of the 3 mapped volumes are as follows:
 
-* `/config` - The configuration file location for HAProxy (haproxy.cfg).
-* `/etc/letsencrypt` - The directory that Let's Encrypt will store it's configuration, certificates and private keys. **It is of significant importance that you maintain a backup of this folder in the event the data is lost or corrupted.**
-* `/usr/local/etc/haproxy/certs.d` - The directory that this container will store the processed certs/keys from Let's Encrypt after they have been converted into a format that HAProxy can use. This is automatically done at each refresh and can also be manually initiated. This volume is not as important as the previous as the certs used by HAProxy can be regenerated again based on the contents of the letsencrypt folder.
+- `/config` - The configuration file location for HAProxy (haproxy.cfg).
+- `/etc/letsencrypt` - The directory that Let's Encrypt will store it's configuration, certificates and private keys. **It is of significant importance that you maintain a backup of this folder in the event the data is lost or corrupted.**
+- `/usr/local/etc/haproxy/certs.d` - The directory that this container will store the processed certs/keys from Let's Encrypt after they have been converted into a format that HAProxy can use. This is automatically done at each refresh and can also be manually initiated. This volume is not as important as the previous as the certs used by HAProxy can be regenerated again based on the contents of the letsencrypt folder.
 
 ### Container Helper Scripts
 
@@ -68,7 +70,7 @@ docker exec haproxy-certbot certbot-certonly \
 docker exec haproxy-certbot haproxy-refresh
 ```
 
-*After testing the setup, remove `--dry-run` to generate a live certificate.*
+_After testing the setup, remove `--dry-run` to generate a live certificate._
 
 #### Renew a Cert
 
@@ -78,7 +80,7 @@ Renewing happens automatically but should you choose to renew manually, you can 
 docker exec haproxy-certbot certbot-renew --dry-run
 ```
 
-*After testing the setup, remove `--dry-run` to refresh a live certificate.*
+_After testing the setup, remove `--dry-run` to refresh a live certificate._
 
 #### Create/Refresh Certs used by HAProxy from Let's Encrypt
 
@@ -96,11 +98,13 @@ docker exec haproxy-certbot haproxy-refresh
 #### Check an alternate configuration for HAProxy
 
 This will check your changes in haproxy.cfg without using them for now:
+
 ```bash
 docker exec haproxy-certbot haproxy-check
 ```
 
 This will check a file named test.cfg (you must put it in the same directory as haproxy.cfg):
+
 ```bash
 docker exec haproxy-certbot haproxy-check test.cfg
 ```
@@ -170,7 +174,7 @@ frontend https-in
 
 backend letsencrypt_http
   mode http
-  server letsencrypt_http_srv 127.0.0.1:8080
+  server letsencrypt_http_srv 127.0.0.1:8443
 
 
 backend my-default-backend
