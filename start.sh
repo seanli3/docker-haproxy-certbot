@@ -49,12 +49,6 @@ nl-qdisc-add --dev=lo --parent=1:4 --id=40: --update plug --release-indefinite
 # Set up the filter, any packet marked with "1" will be directed to the plug
 tc filter add dev lo protocol ip parent 1:0 prio 1 handle 1 fw classid 1:4
 
-HOST_DOMAIN="host.docker.internal"
-ping -q -c1 $HOST_DOMAIN > /dev/null 2>&1
-if [ $? -ne 0 ]; then
-  HOST_IP=$(ip route | awk 'NR==1 {print $3}')
-  echo -e "$HOST_IP\t$HOST_DOMAIN" >> /etc/hosts
-fi
 
 # Run Supervisor
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
