@@ -24,7 +24,7 @@ After this is setup, an inbound request for your website(s) is initially receive
 This will create the _haproxy-certbot_ image.
 
 ```bash
-docker build --no-cache -t haproxy-certbot https://github.com/lonequantum/docker-haproxy-certbot.git
+docker build --no-cache -t haproxy-certbot https://github.com/seanli3/docker-haproxy-certbot.git
 ```
 
 This will create the _haproxy-certbot_ container. Note that only the inbound ports for 80 and 443 are exposed.
