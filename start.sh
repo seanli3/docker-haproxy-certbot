@@ -14,6 +14,8 @@ CSR=${TEMP_DIR}/haproxy.csr
 DEFAULT_PEM=${HA_PROXY_DIR}/default.pem
 CONFIG=/config/haproxy.cfg
 
+HOST_IP=$(ip route | awk 'NR==1 {print $3}')
+
 # Check if config file for HAProxy exists
 if [ ! -e ${CONFIG} ]; then
     echo "${CONFIG} not found"
